@@ -1,0 +1,215 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <title>Movie Ticket Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #dbeafe, #ddd6fe);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+        }
+        
+        .movie-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid transparent;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.03);
+            border-color: #4f46e5;
+        }
+        
+        .movie-poster {
+            height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        
+        .movie-time button {
+            margin: 0.25rem;
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: Dim Grey;
+            color: #1e40af;
+            cursor: pointer;
+        }
+        
+        .movie-time button.selected {
+            background-color: Silver;
+            color: white;
+        }
+        
+        .booking-form {
+            background-color: white;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .booking-form input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ccc;
+        }
+        
+        .booking-form button {
+            width: 100%;
+            padding: 0.7rem;
+            border: none;
+            background-color: orange;
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .confirmation {
+            margin-top: 1rem;
+            background-color: Pale Gold;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: Siskin sprout yellow;
+        }
+        
+        .movies {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 1rem;
+            scroll-behavior: smooth;
+        }
+        
+        .movies::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .movies::-webkit-scrollbar-thumb {
+            background-color: Teal Blue;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Movie Ticket Booking</h1>
+        <div class="movies" id="movies"></div>
+
+        <div class="booking-form">
+            <h2>Booking Details</h2>
+            <input type="text" id="userName" placeholder="Enter your name" />
+            <button onclick="bookTicket()">Book Ticket</button>
+            <div id="confirmation" class="confirmation" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const movies = [{
+            name: "Hit the 3rd case",
+            poster: "https://upload.wikimedia.org/wikipedia/en/0/09/HIT_-_The_Third_Case.jpg",
+            times: ["12:00 PM", "3:00 PM", "6:00 PM", "9:00 PM"],
+            price: 200
+        }, {
+            name: "Old guard 2",
+            poster: "https://d.ibtimes.co.uk/en/full/1744549/old-guard-movie-poster.png?w=624&f=dfd5fcec7f282723dab2c35b7fc3c1b8",
+            times: ["1:00 PM", "4:00 PM", "7:00 PM"],
+            price: 250
+        }, {
+            name: "Jurassic World Rebirth",
+            poster: "https://d.ibtimes.co.uk/en/full/1744670/jurassic-world-rebirth-poster.jpg",
+            times: ["2:00 PM", "5:00 PM", "8:00 PM"],
+            price: 300
+        }];
+
+        let selectedMovie = null;
+        let selectedTime = null;
+
+        function renderMovies() {
+            const movieContainer = document.getElementById("movies");
+            movieContainer.innerHTML = "";
+
+            movies.forEach(movie => {
+                        const card = document.createElement("div");
+                        card.className = "movie-card";
+                        card.onclick = () => {
+                            selectedMovie = movie;
+                            selectedTime = null;
+                            renderMovies();
+                        };
+
+                        card.innerHTML = `
+          <img src="${movie.poster}" class="movie-poster" alt="${movie.name}" />
+          <h3>${movie.name}</h3>
+          <p>₹${movie.price}</p>
+          <div class="movie-time">
+            ${movie.times
+              .map(
+                (time) => `<button onclick="event.stopPropagation(); selectTime('${time}')" class="${
+                  selectedTime === time ? "selected" : ""
+                }">${time}</button>`
+              )
+              .join("")}
+          </div>
+        `;
+
+        movieContainer.appendChild(card);
+      });
+    }
+
+    function selectTime(time) {
+      selectedTime = time;
+      renderMovies();
+    }
+
+    function bookTicket() {
+      const name = document.getElementById("userName").value.trim();
+      const confirmation = document.getElementById("confirmation");
+
+      if (!selectedMovie || !selectedTime || !name) {
+        alert("Please select a movie, time, and enter your name.");
+        return;
+      }
+
+      confirmation.innerHTML = `
+        <h3>Booking Confirmed!</h3>
+        <p>Name: ${name}</p>
+        <p>Movie: ${selectedMovie.name}</p>
+        <p>Time: ${selectedTime}</p>
+        <p>Total Price: ₹${selectedMovie.price}</p>
+      `;
+      confirmation.style.display = "block";
+    }
+
+    renderMovies();
+    </script>
+</body>
+
+</html>
